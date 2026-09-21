@@ -24,7 +24,7 @@ jobs:
 
       - name: Take snapshot
         run: |
-          shot-scraper shots.yml
+          shot-scraper multi shots.yml
 
       - name: Send email via Python
         env:
