@@ -40,6 +40,7 @@ jobs:
 
           sender = os.environ['MAIL_USERNAME']
           password = os.environ['MAIL_PASSWORD']
+          print('user length:', len(sender), '| pass length:', len(password))
           
           msg = MIMEMultipart()
           msg['Subject'] = 'Automated Web Snapshot'
