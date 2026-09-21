@@ -1,0 +1,41 @@
+name: Take and Email Snapshot
+
+on:
+  schedule:
+    # Runs every day at 8:00 AM UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install shot-scraper and browsers
+        run: |
+          pip install shot-scraper
+          shot-scraper install
+
+      - name: Take snapshot
+        run: |
+          shot-scraper shots.yml
+
+      - name: Send email with snapshot
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Automated Web Snapshot"
+          body: "Here is your scheduled webpage snapshot."
+          to: your-email@example.com
+          from: GitHub Actions
+          attachments: snapshot.png
