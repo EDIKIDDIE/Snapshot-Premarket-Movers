@@ -1,14 +1,21 @@
-- name: Test Gmail login
-  env:
-    EMAIL_USER: ${{ secrets.MAIL_USERNAME }}
-    EMAIL_PASS: ${{ secrets.MAIL_PASSWORD }}
-  run: |
-    python3 -c "
-    import os, smtplib
-    u = os.environ.get('EMAIL_USER', '')
-    p = os.environ.get('EMAIL_PASS', '')
-    print('user length:', len(u), '| pass length:', len(p))
-    s = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    s.login(u, p)
-    print('login ok')
-    "
+name: Test SMTP
+on: workflow_dispatch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Gmail login
+        env:
+          EMAIL_USER: ${{ secrets.MAIL_USERNAME }}
+          EMAIL_PASS: ${{ secrets.MAIL_PASSWORD }}
+        run: |
+          python3 -c "
+          import os, smtplib
+          u = os.environ.get('EMAIL_USER', '')
+          p = os.environ.get('EMAIL_PASS', '')
+          print('user length:', len(u), '| pass length:', len(p))
+          s = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+          s.login(u, p)
+          print('login ok')
+          "
