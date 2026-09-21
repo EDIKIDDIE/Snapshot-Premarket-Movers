@@ -35,7 +35,7 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: "Automated Web Snapshot"
-          body: "Here is your scheduled webpage snapshot."
-          to: your-email@example.com
+          body: "Here is your scheduled Premarket Movers snapshot."
+          to: mclaughing102@gmail.com
           from: GitHub Actions
           attachments: snapshot.png
