@@ -2,9 +2,8 @@ name: Take and Email Snapshot
 
 on:
   schedule:
-    # Runs every day at 8:00 AM UTC
     - cron: '0 8 * * *'
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   screenshot:
@@ -27,15 +26,35 @@ jobs:
         run: |
           shot-scraper shots.yml
 
-      - name: Send email with snapshot
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "Automated Web Snapshot"
-          body: "Here is your scheduled Premarket Movers snapshot."
-          to: mclaughing102@gmail.com
-          from: GitHub Actions
-          attachments: snapshot.png
+      - name: Send email via Python
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+        run: |
+          python -c "
+          import os
+          import smtplib
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+          from email.mime.application import MIMEApplication
+
+          sender = os.environ['MAIL_USERNAME']
+          password = os.environ['MAIL_PASSWORD']
+          
+          msg = MIMEMultipart()
+          msg['Subject'] = 'Automated Web Snapshot'
+          msg['From'] = sender
+          msg['To'] = sender
+
+          msg.attach(MIMEText('Here is your scheduled webpage snapshot.'))
+
+          with open('snapshot.png', 'rb') as f:
+              attach = MIMEApplication(f.read(), Name='snapshot.png')
+              attach.add_header('Content-Disposition', 'attachment', filename='snapshot.png')
+              msg.attach(attach)
+
+          with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+              server.login(sender, password)
+              server.send_message(msg)
+          print('Email sent successfully!')
+          "
